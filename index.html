@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<head>
+  <!-- Main library to import -->
+  <script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
+
+  <script>
+    // target elements with the "draggable" class
+    interact('.draggable')
+      .draggable({
+        // enable inertial throwing / Animation to come back into canvas
+        inertia: true,
+
+        // keep the element within the area of it's parent
+        modifiers: [
+          interact.modifiers.restrictRect({
+            restriction: 'parent',
+            endOnly: true,
+          }),
+        ],
+        // enable autoScroll when dragging
+        autoScroll: true,
+
+        //evets called
+        listeners: {
+          // call this function on every dragmove event
+          move: dragMoveListener,
+
+          // call this function on every dragend event
+          end(event) {
+            // text to write on the block (optional)
+            // var textEl = event.target.querySelector('p')
+            // textEl && (textEl.textContent =
+            //   'moved a distance of ' +
+            //   (Math.sqrt(Math.pow(event.pageX - event.x0, 2) +
+            //              Math.pow(event.pageY - event.y0, 2) | 0))
+            //     .toFixed(2) + 'px')
+          },
+        },
+      })
+      .resizable({
+        // resize from all edges and corners
+        edges: { left: true, right: true, bottom: true, top: true },
+
+        listeners: {
+          move(event) {
+            var target = event.target;
+            var x = parseFloat(target.getAttribute('data-x')) || 0;
+            var y = parseFloat(target.getAttribute('data-y')) || 0;
+
+            // update the element's style
+            target.style.width = event.rect.width + 'px';
+            target.style.height = event.rect.height + 'px';
+
+            // translate when resizing from top or left edges
+            x += event.deltaRect.left;
+            y += event.deltaRect.top;
+
+            target.style.transform = 'translate(' + x + 'px,' + y + 'px)';
+
+            target.setAttribute('data-x', x);
+            target.setAttribute('data-y', y);
+            target.textContent =
+              Math.round(event.rect.width) +
+              '\u00D7' +
+              Math.round(event.rect.height);
+          },
+        },
+        // modifiers: [
+        //   // keep the edges inside the parent
+        //   interact.modifiers.restrictEdges({
+        //     outer: 'parent'
+        //   }),
+
+        //   // minimum size
+        //   interact.modifiers.restrictSize({
+        //     min: { width: 100, height: 50 }
+        //   })
+        // ],
+
+        inertia: true,
+      });
+
+    interact('.draggable-menu')
+      .draggable({
+        // enable inertial throwing / Animation to come back into canvas
+        inertia: true,
+
+        // keep the element within the area of it's parent
+        modifiers: [
+          interact.modifiers.restrictRect({
+            restriction: 'parent',
+            endOnly: true,
+          }),
+        ],
+        // enable autoScroll when dragging
+        autoScroll: true,
+
+        //evets called
+        listeners: {
+          // call this function on every dragmove event
+          move: dragMoveListener,
+
+          // call this function on every dragend event
+          end(event) {
+            // text to write on the block (optional)
+            // var textEl = event.target.querySelector('p')
+            // textEl && (textEl.textContent =
+            //   'moved a distance of ' +
+            //   (Math.sqrt(Math.pow(event.pageX - event.x0, 2) +
+            //              Math.pow(event.pageY - event.y0, 2) | 0))
+            //     .toFixed(2) + 'px')
+          },
+        },
+      })
+      .resizable({
+        // resize from all edges and corners
+        edges: { left: true, right: true, bottom: true, top: true },
+
+        listeners: {
+          move(event) {
+            var target = event.target;
+            var x = parseFloat(target.getAttribute('data-x')) || 0;
+            var y = parseFloat(target.getAttribute('data-y')) || 0;
+
+            // update the element's style
+            target.style.width = event.rect.width + 'px';
+            target.style.height = event.rect.height + 'px';
+
+            // translate when resizing from top or left edges
+            x += event.deltaRect.left;
+            y += event.deltaRect.top;
+
+            target.style.transform = 'translate(' + x + 'px,' + y + 'px)';
+
+            target.setAttribute('data-x', x);
+            target.setAttribute('data-y', y);
+            target.textContent =
+              Math.round(event.rect.width) +
+              '\u00D7' +
+              Math.round(event.rect.height);
+          },
+        },
+        // modifiers: [
+        //   // keep the edges inside the parent
+        //   interact.modifiers.restrictEdges({
+        //     outer: 'parent'
+        //   }),
+
+        //   // minimum size
+        //   interact.modifiers.restrictSize({
+        //     min: { width: 100, height: 50 }
+        //   })
+        // ],
+
+        inertia: true,
+      });
+
+    // the fucntion which actually calculates the co ordinates and aligns item
+    function dragMoveListener(event) {
+      var target = event.target;
+
+      // event variable includes all coordinates and other details of draggeed element
+      // event.dx and dy calcualtes the distance between start and stop of dragging in pixels
+
+      // keep the dragged position in the data-x/data-y attributes  / Stores the new position in variables
+      var x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx;
+      var y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
+
+      // translate the element / actually moves the elements
+      target.style.transform = 'translate(' + x + 'px, ' + y + 'px)';
+
+      // update the posiion attributes in html tag so it can be used later when element is moved again
+      target.setAttribute('data-x', x);
+      target.setAttribute('data-y', y);
+    }
+    // this function is used later in the resizing and gesture demos
+    window.dragMoveListener = dragMoveListener;
+  </script>
+
+  <style>
+    .drag-box {
+      width: 160px;
+      min-height: 50px;
+      max-height: 300px;
+      position: absolute;
+      margin: 1rem;
+      background-color: #29e;
+      color: white;
+      border-radius: 8px;
+      padding: 4%;
+      touch-action: none;
+      user-select: none;
+      transform: translate(0px, 0px);
+
+      font-size: 20px;
+      font-family: sans-serif;
+
+      /* helps animation while resising box   */
+      box-sizing: border-box;
+    }
+
+    /* .resize-drag {
+  width: 120px;
+  border-radius: 8px;
+  padding: 20px;
+  margin: 1rem;
+  background-color: #29e;
+  color: white;
+  font-size: 20px;
+  font-family: sans-serif;
+
+  touch-action: none;
+
+
+  box-sizing: border-box;
+} */
+  </style>
+
+  <script>
+    function moveBox(newX, newY) {
+      let box = document.getElementById('my-box');
+
+      // will fetch data from db
+      let position = {
+        element1: {
+          x: 300,
+          y: 50,
+        },
+      };
+
+      let x = position.element1.x;
+      let y = position.element1.y;
+      // update the posiion attributes in html tag so it can be used later when element is moved again
+      box.setAttribute('data-x', x);
+      box.setAttribute('data-y', y);
+
+      box.style.transform = 'translate(' + x + 'px, ' + y + 'px)';
+    }
+
+    function moveRight(newX, newY) {
+      let box = document.getElementById('my-box');
+
+      let x = parseFloat(box.getAttribute('data-x'));
+      let y = parseFloat(box.getAttribute('data-y'));
+      let newXPosition = x + 50;
+
+      // update the posiion attributes in html tag so it can be used later when element is moved again
+      box.setAttribute('data-x', newXPosition);
+      box.setAttribute('data-y', y);
+
+      box.style.transform = 'translate(' + x + 'px, ' + y + 'px)';
+    }
+
+    function savePosition() {
+      const fs = require('fs');
+
+      let box = document.getElementById('my-box');
+      let boxX = parseFloat(box.getAttribute('data-x'));
+      let boxY = parseFloat(box.getAttribute('data-y'));
+
+      let position = {
+        element1: {
+          x: boxX,
+          y: boxY,
+        },
+      };
+
+      // converting the JSON object to a string
+      const data = JSON.stringify(position);
+
+      // writing the JSON string content to a file
+      fs.writeFile('data.json', data, (error) => {
+        // throwing the error
+        // in case of a writing problem
+        if (error) {
+          // logging the error
+          console.error(error);
+
+          throw error;
+        }
+        console.log('data.json written correctly');
+      });
+
+      // update the posiion attributes in html tag so it can be used later when element is moved again
+      box.setAttribute('data-x', newXPosition);
+      box.setAttribute('data-y', y);
+
+      box.style.transform = 'translate(' + x + 'px, ' + y + 'px)';
+    }
+
+    function addElement() {
+      boxText = document.getElementById('box-name').value;
+
+      var div = document.createElement('div');
+      div.className = 'draggable drag-box';
+      div.innerHTML = boxText;
+      div.setAttribute('data-x', 0);
+      div.setAttribute('data-y', 300);
+
+      document.getElementById('main-canvas').appendChild(div);
+      div.style.transform = 'translate(' + 0 + 'px, ' + 300 + 'px)';
+    }
+  </script>
+</head>
+
+<body>
+  <button onclick="moveBox(400,100)">Move Box</button>
+  <button onclick="moveRight()">Move Right</button>
+  <button onclick="savePosition()">Save Position</button>
+  <br />
+  <h3>Create Element</h3>
+  <input type="text" id="box-name" />
+  <button onclick="addElement()">Create Element</button>
+
+  <div
+    class="dashboard"
+    style="display: inline-flex; width: 100%; height: 400px"
+  >
+    <div
+      id="main-canvas"
+      class="drag-canvas"
+      style="
+        width: 20%;
+        height: 100%;
+        background-color: #b1b1b1;
+        margin-right: 4%;
+      "
+    >
+      <div class="draggable-menu drag-box">
+        <p>You can drag one element</p>
+      </div>
+    </div>
+
+    <div
+      class="drag-canvas"
+      style="width: 60%; height: 100%; background-color: #f5f5f5"
+    >
+      <div
+        id="my-box"
+        style="transform: translate(0px, 0px)"
+        data-x="0"
+        data-y="0"
+        class="draggable drag-box"
+      >
+        <p>element 1</p>
+      </div>
+
+      <div
+        style="transform: translate(400px, 0px)"
+        data-x="400"
+        data-y="0"
+        class="draggable drag-box"
+      >
+        <p>element 2</p>
+      </div>
+
+      <div
+        style="transform: translate(600px, 0px)"
+        data-x="600"
+        data-y="0"
+        class="draggable drag-box"
+      >
+        <p>element 3</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 
+    <canvas class="rainbow-pixel-canvas"></canvas> -->
+
+  <!-- <div class="sliders">
+        <div class="slider"></div>
+        <div class="slider"></div>
+        <div class="slider"></div>
+      </div> -->
+</body>
